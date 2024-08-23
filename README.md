@@ -20,7 +20,7 @@
 
 ## Instalación del proyecto
 
-Para instalr las dependencias del proyecto, utilice npm y el siguiente comando:
+Para instalr las dependencias del proyecto, utilice npm y el siguiente comando;
 
 ```bash
   npm install

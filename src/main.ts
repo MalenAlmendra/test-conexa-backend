@@ -8,7 +8,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Documentación API peliculas y series')
     .setDescription('Esta documentacion es parte de una API REST dedicada a la gestion de peliculas y series')
-    .setVersion('1.0')
+    .setVersion('1.0.0')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
