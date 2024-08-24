@@ -2,14 +2,13 @@ import { Module } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { ConfigModule } from '@nestjs/config';
-import configuration from './config/configuration';
+import { config } from './config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
+      load: [config],
       envFilePath: '.env',
-      load: [configuration],
-      isGlobal:true
     }),
     AuthModule,
     UserModule,
