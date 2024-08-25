@@ -1,26 +1,30 @@
-import { Injectable } from '@nestjs/common';
-
-//TODO: este type debe ser un DTO que valide la info del usuario
-export type User = any;
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { Repository, FindOneOptions } from 'typeorm';
+import { UserEntity } from './entities/user.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class UserService {
+  constructor(
+    @InjectRepository(UserEntity)
+    private userRepository: Repository<UserEntity>,
+  ) {}
 
-    //TODO: estos datos deben venir de la base de datos.
-    private readonly users = [
-        {
-          userId: 1,
-          username: 'john',
-          password: 'changeme',
-        },
-        {
-          userId: 2,
-          username: 'maria',
-          password: 'guess',
-        },
-      ];
-      
-    async findOne(username: string): Promise<User | undefined> {
-        return this.users.find(user => user.username === username);
-      }
+  async findOne(username: string): Promise<UserEntity | null> {
+    const options: FindOneOptions<UserEntity> = {
+      where: { username }
+    };
+
+    return this.userRepository.findOne(options);
+  }
+
+  async createUser(body:any):Promise<any>{
+    try {
+      const newUser = this.userRepository.create(body)
+      return await this.userRepository.save(newUser)
+    } catch (error) {
+      throw new  BadRequestException('Something was wrong')
+    }
+     
+  }
 }
