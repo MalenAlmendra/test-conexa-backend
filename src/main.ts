@@ -10,6 +10,9 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const server = configService.get('config.server');
   const swagger = configService.get('config.swagger');
+
+  app.setGlobalPrefix('v1/api');
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
