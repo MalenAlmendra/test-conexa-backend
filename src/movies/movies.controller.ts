@@ -1,8 +1,9 @@
-import { Body, Controller, ForbiddenException, Get, InternalServerErrorException, NotFoundException, Param, Post, Request, UseGuards } from '@nestjs/common';
-import { MoviesService } from './movies.service';
+import { Body, Controller, Delete, ForbiddenException, Get, InternalServerErrorException, NotFoundException, Param, Post, Put, Request, UseGuards } from '@nestjs/common';
+import { MoviesService } from './services/movies.service';
 import { ApiProperty, ApiTags } from '@nestjs/swagger';
-import { MovieDTO } from './dto/movie.dto';
+import { CreateMovieDTO, MoviesResponseDTO } from './dto/movie.dto';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { UpdateMovieDto } from './dto/updateMovie.dto';
 
 @ApiTags('Movies')
 @Controller('movies')
@@ -10,13 +11,11 @@ export class MoviesController {
 
     constructor( private moviesService:MoviesService ){}
 
-    //TODO: En any va un Movie[]. Movie es el dto
     @Get('/')
     @ApiProperty({description:'This endpoint is for get all movies'})
-    async getAllMovies(): Promise<any>{
+    async getAllMovies(): Promise<MoviesResponseDTO>{
         try {
-            const movieList = await this.moviesService.getAllMovies()
-            return movieList
+            return await this.moviesService.getAllMovies()
         } catch (error) {
             throw new NotFoundException('movies List not found')
         }
@@ -28,7 +27,7 @@ export class MoviesController {
     async getMovieDetails(@Request() req, @Param('idMovie') idMovie:string):Promise<any>{
 
         if(req.user.isAdmin){
-            throw new ForbiddenException('No tienes permisos de administrador');
+            throw new ForbiddenException('No tienes permisos de usuario');
         }
         
         try {
@@ -42,16 +41,44 @@ export class MoviesController {
     @UseGuards(JwtAuthGuard)
     @Post('/create')
     @ApiProperty({description:'This endpoint create a movie'})
-    async createMovie(@Request() req, @Body() movie:MovieDTO):Promise<any>{
+    async createMovie(@Request() req, @Body() movie:CreateMovieDTO):Promise<any>{
         if(!req.user.isAdmin){
             throw new ForbiddenException('No tienes permisos de administrador');
         }
 
         try {
-            await this.moviesService.createMovie(movie)
-            return 'Movie Created'
+            return await this.moviesService.createMovie(movie)
         } catch (error) {
             throw new InternalServerErrorException('movie can\'t by created')
         }
-    } 
+    }
+    
+    @UseGuards(JwtAuthGuard)
+    @ApiProperty({description:'This endpoint update information about a movie '})
+    @Put('/update')
+    async updateMovie(@Request() req, @Body() movieUpdated: UpdateMovieDto):Promise<any>{
+        if(!req.user.isAdmin){
+            throw new ForbiddenException('No tienes permisos de administrador');
+        }
+
+        try {
+            return await this.moviesService.updateMovie(movieUpdated)
+        } catch (error) {
+            throw new InternalServerErrorException('movie can\'t by updated')
+        }
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Delete('/delete/:idMovie')
+    async deleteMovie(@Request() req, @Param('idMovie') idMovie:string):Promise<any>{
+        if(!req.user.isAdmin){
+            throw new ForbiddenException('No tienes permisos de administrador');
+        }
+
+        try {
+            return await this.moviesService.deleteMovie(idMovie)
+        } catch (error) {
+            
+        }
+    }
 }
