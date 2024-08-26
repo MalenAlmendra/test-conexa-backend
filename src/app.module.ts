@@ -4,13 +4,12 @@ import { UserModule } from './user/user.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { config } from './config';
 import { MoviesController } from './movies/movies.controller';
-import { MoviesService } from './movies/movies.service';
+import { MoviesService } from './movies/services/movies.service';
 import { MoviesModule } from './movies/movies.module';
 import { HttpModule } from '@nestjs/axios';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ScheduleModule } from '@nestjs/schedule';
 import { DataSource } from 'typeorm';
-import { UserEntity } from './user/entities/user.entity';
-import { MoviesEntity } from './movies/entities/movies.entity';
 
 @Module({
   imports: [
@@ -41,12 +40,13 @@ import { MoviesEntity } from './movies/entities/movies.entity';
           username: dbConfig.user,
           password: dbConfig.password,
           database: dbConfig.name,
-          entities: [UserEntity,MoviesEntity],
-          synchronize: true,
+          entities: [__dirname + "/**/entities/**.entity{.ts,.js}"],
+          synchronize:false,
         }
       },
       inject: [ConfigService],
     }),
+    ScheduleModule.forRoot(),
     AuthModule,
     UserModule,
     MoviesModule,
