@@ -13,7 +13,7 @@ import { AxiosError } from 'axios';
 import { firstValueFrom, catchError } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 import { config } from '../../config';
-import { CreateMovieDTO, MoviesResponseDTO } from '../dto/movie.dto';
+import { CreateMovieDTO, MoviesResponseDTO, Result } from '../dto/movie.dto';
 import { MoviesEntity } from '../entities/movies.entity';
 import { UpdateMovieDto } from '../dto/updateMovie.dto';
 
@@ -43,12 +43,12 @@ export class MoviesService {
       );
       return data;
     } catch (error) {
-      this.logger.error('Error en getAllMovies:', error);
+      this.logger.error('Error in getAllMovies:', error);
       throw error;
     }
   }
 
-  async getMovieDetails(idMovie: string): Promise<any> {
+  async getMovieDetails(idMovie: string): Promise<Result> {
     try {
       const { data } = await firstValueFrom(
         this.httpService
@@ -67,17 +67,18 @@ export class MoviesService {
     }
   }
 
-  async createMovie(movie: CreateMovieDTO): Promise<any> {
+  async createMovie(movie: CreateMovieDTO): Promise<string> {
     try {
       const newMovie = this.moviesRepository.create(movie);
-      return await this.moviesRepository.save(newMovie);
+      await this.moviesRepository.save(newMovie);
+      return "Movie Created"
     } catch (error) {
       this.logger.error('Error creating movie:', error.message, error.stack);
       throw new BadRequestException('Something was wrong');
     }
   }
 
-  async updateMovie(movie: UpdateMovieDto): Promise<any> {
+  async updateMovie(movie: UpdateMovieDto): Promise<string> {
     const { idMovie } = movie;
 
     const actualMovie = this.moviesRepository.findOne({
@@ -100,7 +101,7 @@ export class MoviesService {
     }
   }
 
-  async deleteMovie(idMovie: string): Promise<any> {
+  async deleteMovie(idMovie: string): Promise<string> {
     const actualMovie = this.moviesRepository.findOne({
       where: { idMovie },
     });

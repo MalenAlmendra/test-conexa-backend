@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsArray,
@@ -5,6 +6,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  ValidateNested,
 } from 'class-validator';
 
 export class CreateMovieDTO {
@@ -60,65 +62,85 @@ export class CreateMovieDTO {
   url: string;
 }
 
-export class MoviesResponseDTO {
-  @IsNumber()
-  count: number;
-
-  @IsEmpty()
-  next: null;
-
-  @IsEmpty()
-  previous: null;
-
-  @IsArray()
-  @Type(() => Result)
-  results: Result[];
-}
-
 export class Result {
   @IsString()
   @IsOptional()
+  @ApiProperty({description: 'The ID of the movie',})
   idMovie?: string='';
 
   @IsString()
+  @ApiProperty({description: 'The title of the movie',})
   title: string;
 
   @IsNumber()
+  @ApiProperty({description: 'Number of Episode',})
   episode_id: number;
 
   @IsString()
+  @ApiProperty({description: 'Opening crowler',})
   opening_crawl: string;
 
   @IsString()
+  @ApiProperty({description: 'Director',})
   director: string;
 
   @IsString()
+  @ApiProperty({description: 'Producer',})
   producer: string;
 
   @IsString()
+  @ApiProperty({description: 'Release date',})
   release_date: string;
 
   @IsArray()
+  @ApiProperty({ description:'Characters' ,type: String, isArray: true })
   characters: string[];
 
   @IsArray()
+  @ApiProperty({ description:'Planets' ,type: String, isArray: true })
   planets: string[];
 
   @IsArray()
+  @ApiProperty({ description:'Starships', type: String, isArray: true })
   starships: string[];
 
   @IsArray()
+  @ApiProperty({ description:'Vehicles', type: String, isArray: true })
   vehicles: string[];
 
   @IsArray()
+  @ApiProperty({ description:'Species', type: String, isArray: true })
   species: string[];
 
   @IsString()
+  @ApiProperty({description:'Created'})
   created: string;
 
   @IsString()
+  @ApiProperty({description:'Edited'})
   edited: string;
 
   @IsString()
+  @ApiProperty({description:'Url'})
   url: string;
+}
+
+export class MoviesResponseDTO {
+  @ApiProperty()
+  @IsNumber()
+  count: number;
+
+  @ApiProperty()
+  @IsEmpty()
+  next: null;
+
+  @ApiProperty()
+  @IsEmpty()
+  previous: null;
+
+  @ApiProperty({type:()=>Result, default: [] })
+  @Type(() => Result)
+  @ValidateNested()
+  @IsArray()
+  results: Result[];
 }

@@ -13,7 +13,7 @@ export class MoviesEntity {
   title: string;
 
   @Column({ nullable: true, type:'longtext' })
-  opening_crawl: string;
+  opening_crawl?: string;
 
   @Column()
   director: string;

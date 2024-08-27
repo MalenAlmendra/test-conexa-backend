@@ -14,3 +14,4 @@ export class UserEntity {
   @Column()
   isAdmin:boolean;
 }
+
